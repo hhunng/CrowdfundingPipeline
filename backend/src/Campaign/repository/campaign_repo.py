@@ -31,6 +31,19 @@ class CampaignRepository:
             print(f"Error updating campaign: {e}")
             return False
         
+    async def update_campaign_raised_amount(self, campaign_id: int, amount: int) -> bool:
+        try:
+            campaign = await Campaign.query.where(Campaign.campaign_id == campaign_id).gino.first()
+            if campaign is not None:
+                new_raised_amount = campaign.raised_amount + amount
+                await campaign.update(raised_amount=new_raised_amount).apply()
+                return True
+            else:
+                print(f"No campaign with id '{campaign_id}' found")
+                return False
+        except Exception as e:
+            print(f"Error updating campaign: {e}")
+            return False
     async def delete_campaign(self, campaign_id: int) -> bool:
         try:
             campaign = await Campaign.query.where(Campaign.campaign_id == campaign_id).gino.first()
@@ -73,6 +86,17 @@ class CampaignRepository:
             query = await Campaign.query.where(Campaign.title == title).gino.all()
             if query is not None:
                 return [campaign.to_dict() for campaign in query]
+            else:
+                print(f"No campaign with title '{title}' found")
+                return None
+        except Exception as e:
+            print(f"Error retrieving campaign: {e}")
+            return None
+    async def get_campaign_id_by_title(self, title: str):
+        try:
+            query = await Campaign.query.where(Campaign.title == title).gino.first()
+            if query is not None:
+                return query.campaign_id
             else:
                 print(f"No campaign with title '{title}' found")
                 return None

@@ -45,7 +45,18 @@ async def update_campaign(campaign_id: int, req: CampaignReq, current_user: dict
         return req
     else:
         return JSONResponse(status_code=500, content="Update campaign profile problem encountered")
-
+    
+@router.patch("/campaign/update_raised_amount", tags = ['Campaign'])
+async def update_campaign_raised_amount(campaign_id: int, amount: int):
+    command = CampaignCommand()
+    command.details = {'campaign_id': campaign_id, 'raised_amount': amount}
+    handler = UpdateCampaignCommandHandler()
+    result = await handler.handle_raised_amount(command)
+    if result:
+        return {"message": "Raised amount updated successfully"}
+    else:
+        return JSONResponse(status_code=500, content="Update raised amount error")
+    
 @router.delete("/campaign/delete", tags = ['Campaign'])
 async def delete_campaign(campaign_id: int, current_user: dict = Depends(get_current_user)):
     command = CampaignCommand()
@@ -70,8 +81,20 @@ async def get_campaign_by_user_id(current_user: dict = Depends(get_current_user)
     query:CampaignRecordQuery = await handler.handle_by_user_id(user_id) 
     return query.record
 
+# @router.get("/campaign/get_by_title", tags = ['Campaign'])
+# async def get_campaign_by_title(title: str, current_user: dict = Depends(get_current_user)):
+#     handler = RecordCampaignQueryHandler()
+#     query:CampaignRecordQuery = await handler.handle_by_campaign_title(title) 
+#     return query.record
+
 @router.get("/campaign/get_by_title", tags = ['Campaign'])
-async def get_campaign_by_title(title: str, current_user: dict = Depends(get_current_user)):
+async def get_campaign_by_title(title: str):
     handler = RecordCampaignQueryHandler()
     query:CampaignRecordQuery = await handler.handle_by_campaign_title(title) 
+    return query.record
+
+@router.get("/campaign/get_campaign_id_by_title", tags = ['Campaign'])
+async def get_campaign_id_by_title(title: str):
+    handler = RecordCampaignQueryHandler()
+    query:CampaignRecordQuery = await handler.handle_campaign_id_by_title(title) 
     return query.record

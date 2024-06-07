@@ -50,3 +50,16 @@ class UserRepository:
         except Exception as e:
             print(f"Error getting user id: {e}")
             return None
+        
+    async def get_fullname_by_username(self, username: str) -> str:
+        try:
+            user = await User.query.where(User.username == username).gino.first()
+            if user is not None:
+                fullname = f"{user.first_name} {user.last_name}"
+                return fullname
+            else:
+                print(f"No user with username '{username}' found")
+                return None
+        except Exception as e:
+            print(f"Error getting fullname: {e}")
+            return None

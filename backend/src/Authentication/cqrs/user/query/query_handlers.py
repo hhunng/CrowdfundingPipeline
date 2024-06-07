@@ -22,3 +22,8 @@ class RecordUserQueryHandler(IQueryHandler):
         self.query.record = data
         return self.query
     
+    async def handle_fullname_by_username(self, username) -> UserListQuery:
+        data = await self.repo.get_fullname_by_username(username)
+        self.query.record = data
+        return self.query
+    

@@ -27,3 +27,7 @@ class RecordCampaignQueryHandler(IQueryHandler):
         self.query.record = data
         return self.query
     
+    async def handle_campaign_id_by_title(self, campaign_title) -> CampaignListQuery:
+        data = await self.repo.get_campaign_id_by_title(campaign_title)
+        self.query.record = data
+        return self.query
