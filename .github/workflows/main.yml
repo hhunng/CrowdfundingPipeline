@@ -25,6 +25,7 @@ jobs:
 
     - name: Run Gitleaks
       run: |
+        git config --global --add safe.directory '*'
         gitleaks detect --source . -v
 
     - name: Upload Gitleaks JSON report to artifacts
