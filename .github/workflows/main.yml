@@ -158,7 +158,7 @@ jobs:
         AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
         AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
       run: |
-        docker build -t ${{ github.run_number }} -t latest .
+        docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }} .
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
 
     - name: Run Trivy vulnerability scanner
