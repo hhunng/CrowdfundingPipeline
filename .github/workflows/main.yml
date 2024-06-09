@@ -7,9 +7,13 @@ on:
     - staging
 
 env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: ECRegistry
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+  ECR_REPOSITORY: evangelion-registry
   EKS_CLUSTER: Karpenter
+  IMAGE_NAME: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry
+  AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
 
 jobs:
 
@@ -129,3 +133,34 @@ jobs:
       run: |
         python3 upload-reports.py semgrep.json ${{ secrets.DEFECT_TOKEN }}
         python3 upload-reports.py dependency-check-report.sarif ${{ secrets.DEFECT_TOKEN }}
+
+  registry:
+    needs: reports
+    name: Push Image to ECR
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+
+#    - name: Configure AWS credentials
+#      uses: aws-actions/configure-aws-credentials@v1
+#      with:
+#        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+#       aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+#        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Upload image to ECR
+      uses: appleboy/docker-ecr-action@master
+      with:
+        access_key: ${{ env.AWS_ACCESS_KEY_ID }}
+        secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        registry: ${{ env.IMAGE_NAME }}
+        repo: ${{ env.ECR_REPOSITORY }}
+        region: ${{ env.AWS_DEFAULT_REGION }}
+        tags: "$IMAGE_NAME:${{ github.sha }}, $IMAGE_NAME:latest"
+        daemon_off: false
+        dockerfile: ./Dockerfile
+        context: ./
+ 
+
+    
