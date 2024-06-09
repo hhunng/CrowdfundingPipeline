@@ -70,7 +70,7 @@ jobs:
       id: Depcheck
       with:
         project: 'test'
-        path: '.'
+        path: '/Authentication/requirements.txt'
         format: 'SARIF'
         out: 'reports'
         args: >
