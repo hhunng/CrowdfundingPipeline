@@ -12,7 +12,6 @@ env:
   AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
   ECR_REPOSITORY: evangelion-registry
   EKS_CLUSTER: Karpenter
-  IMAGE_NAME: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_DEFAULT_REGION}}.amazonaws.com/evangelion-registry
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 jobs:
@@ -156,12 +155,11 @@ jobs:
     - name: Build and push the tagged docker image to Amazon ECR
       id : containerImage
       env:
-        ECR_REGISTRY: ${{ steps.login-pf-aws-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{secrets.AWS_ECR_REPO}}
-        IMAGE_TAG: latest
+        AWS_ACCOUNT_ID = ${{secrets.AWS_ACCOUNT_ID}}
+        AWS_DEFAULT_REGION = ${{secrets.AWS_DEFAULT_REGION}}
       run: |
         docker build -t ${{ github.run_number }} -t latest .
-        docker push ${{ github.run_number }}
+        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.20.0
