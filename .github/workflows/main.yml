@@ -1,0 +1,124 @@
+name: DevSecOps Pipeline
+#on: workflow_dispatch
+
+on:
+  push:
+    branches:
+    - main
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: ECRegistry
+  EKS_CLUSTER: Karpenter
+
+jobs:
+  gitleaks:
+    name: Gitleaks Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+
+    - name: Run Gitleaks
+      id: gitleaks
+      uses: DariuszPorowski/github-action-gitleaks@v2
+      with:
+        config: MyGitleaksConfigs/MyGitleaksConfig.toml
+
+    - name: Upload Gitleaks JSON report to artifacts
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: gitleaks
+        path: gitleaks.json
+
+
+  semgrep:
+    name: Semgrep Scan
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+    - name: full scan
+      run: |
+        semgrep \
+          --sarif --output report.sarif \
+          --metrics=off \
+          --config="p/python"
+
+    - name: full scan json
+      run: semgrep scan --lang python --json-output=semgrep.json
+
+    - name: save report as pipeline artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: semgrep
+        path: semgrep.json
+      if: ${{ always() }}
+
+  dependencycheck:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+    - name: Depcheck
+      uses: dependency-check/Dependency-Check_Action@main
+      id: Depcheck
+      with:
+        project: 'test'
+        path: '.'
+        format: 'SARIF'
+        out: 'reports'
+        args: >
+          --failOnCVSS 7 --enableRetired
+    - name: Upload Test results
+      uses: actions/upload-artifact@master
+      with:
+        name: Depcheck report
+        path: ${{github.workspace}}/reports
+
+    - name: Check var
+      run: ls -la ${{github.workspace}}/reports
+    - name: save report as pipeline artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependencycheck
+        path: ${{github.workspace}}/reports/dependency-check-report.sarif
+      if: ${{ always() }}
+
+  reports:
+    needs: [semgrep, gitleaks, dependencycheck]
+    name: Upload reports
+    runs-on: ubuntu-latest
+    container:
+      image: python
+
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v4
+
+    - name: Download aritfact of Segrem
+      uses: actions/download-artifact@v4
+      with:
+        name: semgrep
+
+    - name: Pre-installed dependency
+      #    - name: Download aritfact of Gitleaks
+      #      uses: actions/download-artifact@v4
+      #      with:
+      #        name: gitleaks
+      run: pip3 install requests
+
+    - name: Download aritfact of Dependency Check OWASP
+      uses: actions/download-artifact@v4
+      with:
+        name: dependencycheck
+
+    - name: Push reports
+      run: |
+        python3 upload-reports.py semgrep.json ${{ secrets.DEFECT_TOKEN }}
+        python3 upload-reports.py dependency-check-report.sarif ${{ secrets.DEFECT_TOKEN }}
