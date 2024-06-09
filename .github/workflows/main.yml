@@ -12,7 +12,7 @@ env:
   AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
   ECR_REPOSITORY: evangelion-registry
   EKS_CLUSTER: Karpenter
-  IMAGE_NAME: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/evangelion-registry
+  IMAGE_NAME: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_DEFAULT_REGION}}.amazonaws.com/evangelion-registry
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 jobs:
@@ -154,7 +154,7 @@ jobs:
       with:
         access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        registry: ${{ env.IMAGE_NAME }}
+        registry: ${{ secrets.REGISTRY_URI }}
         repo: ${{ env.ECR_REPOSITORY }}
         region: ${{ secrets.AWS_DEFAULT_REGION }}
         tags: "${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.IMAGE_NAME }}:latest"
