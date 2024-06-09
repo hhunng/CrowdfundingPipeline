@@ -162,6 +162,9 @@ jobs:
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
 
     - name: Run Trivy vulnerability scanner
+      env:
+        AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
+        AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
       uses: aquasecurity/trivy-action@0.20.0
       with:
         image-ref: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
