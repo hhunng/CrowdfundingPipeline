@@ -164,7 +164,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.20.0
       with:
-        image-ref: ${{ github.run_number }}
+        image-ref: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
