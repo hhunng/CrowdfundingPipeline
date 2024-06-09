@@ -4,7 +4,7 @@ name: DevSecOps Pipeline
 on:
   push:
     branches:
-    - main
+    - staging
 
 env:
   AWS_REGION: us-east-1
