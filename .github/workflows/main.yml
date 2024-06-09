@@ -157,7 +157,7 @@ jobs:
         registry: ${{ secrets.REGISTRY_URI }}
         repo: ${{ env.ECR_REPOSITORY }}
         region: ${{ secrets.AWS_DEFAULT_REGION }}
-        tags: "${{ secrets.REGISTRY_URI }}/evangelion-registry:${{ github.sha }}, ${{ secrets.REGISTRY_URI }}/evangelion-registry:latest"
+        tags: ${{ secrets.REGISTRY_URI }}/evangelion-registry:${{ github.sha }}, ${{ secrets.REGISTRY_URI }}/evangelion-registry:latest
         daemon_off: false
         dockerfile: ./Dockerfile
         context: ./
