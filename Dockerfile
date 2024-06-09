@@ -9,9 +9,3 @@ RUN apt-get update && apt-get install -y \
 
 # Set the working directory to /app
 WORKDIR /app
-
-# Install the Python dependencies
-RUN pip3 install --no-cache-dir flask
-
-# Define the command to run the application
-CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
