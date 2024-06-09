@@ -155,8 +155,8 @@ jobs:
     - name: Build and push the tagged docker image to Amazon ECR
       id : containerImage
       env:
-        AWS_ACCOUNT_ID = ${{secrets.AWS_ACCOUNT_ID}}
-        AWS_DEFAULT_REGION = ${{secrets.AWS_DEFAULT_REGION}}
+        AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
+        AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
       run: |
         docker build -t ${{ github.run_number }} -t latest .
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
