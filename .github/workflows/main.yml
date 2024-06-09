@@ -158,7 +158,7 @@ jobs:
         AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
         AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
       run: |
-        docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }} .
+        docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }} -t docker.io/my-organization/my-app:${{ github.sha }} .
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
 
     - name: Run Trivy vulnerability scanner
@@ -167,7 +167,7 @@ jobs:
         AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
       uses: aquasecurity/trivy-action@0.20.0
       with:
-        image-ref: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/evangelion-registry:${{ github.run_number }}
+        image-ref: docker.io/my-organization/my-app:${{ github.sha }}
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
