@@ -24,6 +24,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run Gitleaks
+      id: gitleaks
       run: |
         git config --global --add safe.directory '*'
         gitleaks detect --source . -v
@@ -99,6 +100,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: gitleaks
+      if: jobs.gitleaks.step.gitleaks.outcome == 'failure'
 
     - name: Download aritfact of Segrem
       uses: actions/download-artifact@v4
