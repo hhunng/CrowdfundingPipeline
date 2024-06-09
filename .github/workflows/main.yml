@@ -152,12 +152,12 @@ jobs:
     - name: Upload image to ECR
       uses: appleboy/docker-ecr-action@master
       with:
-        access_key: ${{ env.AWS_ACCESS_KEY_ID }}
-        secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         registry: ${{ env.IMAGE_NAME }}
         repo: ${{ env.ECR_REPOSITORY }}
-        region: ${{ env.AWS_DEFAULT_REGION }}
-        tags: "$IMAGE_NAME:${{ github.sha }}, $IMAGE_NAME:latest"
+        region: ${{ secrets.AWS_DEFAULT_REGION }}
+        tags: "${{ env.IMAGE_NAME }}:${{ github.sha }}, ${{ env.IMAGE_NAME }}:latest"
         daemon_off: false
         dockerfile: ./Dockerfile
         context: ./
