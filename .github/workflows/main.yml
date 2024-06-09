@@ -121,7 +121,7 @@ jobs:
         name: dependencycheck
 
     - name: Push gitleaks report
-      if: steps.gitleaks.outcome == 'failure'
+      if: steps.gitleaks.outcome == 'success'
       run: |
         python3 upload-reports.py gitleaks.json ${{ secrets.DEFECT_TOKEN }}
 
